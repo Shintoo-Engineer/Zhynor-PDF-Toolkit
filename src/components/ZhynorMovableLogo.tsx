@@ -95,7 +95,7 @@ export default function ZhynorMovableLogo() {
           PDF Toolkit
         </h4>
         <p className="text-[8.5px] text-slate-400 font-medium font-sans mt-0.5 leading-normal">
-          Powered by <span className={`font-black font-mono tracking-wide ${accentStyles[accent].text}`}>Zhynor Technologies</span>
+          Designed & Developed by <span className={`font-black font-mono tracking-wide ${accentStyles[accent].text}`}>Zhynor Technologies</span>
         </p>
       </div>
 
