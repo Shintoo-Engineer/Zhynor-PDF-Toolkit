@@ -191,9 +191,9 @@ export default function App() {
           <div className="flex items-start gap-2.5">
             <Shield className="text-emerald-400 shrink-0 mt-0.5" size={14} />
             <div>
-              <p className="text-[10px] font-bold text-slate-200">Local Sandbox</p>
+              <p className="text-[10px] font-bold text-slate-200">Zhynor Technologies</p>
               <p className="text-[9px] text-slate-400 mt-0.5 leading-normal">
-                Files process offline in-browser. Zero data leaves this machine.
+                Building privacy-first software, AI-powered applications, automation platforms, and business solutions for modern teams.
               </p>
             </div>
           </div>
@@ -203,7 +203,7 @@ export default function App() {
         <div className="p-4 mx-4 mb-4 bg-slate-950/40 rounded-2xl border border-slate-800/60 text-left space-y-1.5">
           <p className="text-[10px] font-bold text-slate-300">Engineering Support</p>
           <p className="text-[9px] text-slate-400 leading-normal">
-            Reach out for enterprise self-hosting setups or help:
+            Professional support for Zhynor PDF Toolkit users.
           </p>
           <a href="mailto:zhynor.business@gmail.com" className="text-[9px] text-emerald-400 hover:underline font-semibold block break-all">
             zhynor.business@gmail.com
@@ -258,14 +258,14 @@ export default function App() {
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
             <p className="text-xs font-bold text-slate-700 tracking-wide font-sans">
-              100% Free • Unlimited Usage • Self-Hosted • No API Costs • Privacy First
+              100% Free • Unlimited Usage • Fast • Secure • Browser-Based • Privacy First
             </p>
           </div>
           
           <div className="flex items-center gap-3 text-[10px] text-slate-400 font-mono">
-            <span>SANDBOX IS COMPLIANT</span>
+            <span>Zhynor Technologies</span>
             <span>|</span>
-            <span className="flex items-center gap-1"><Shield size={11} className="text-emerald-500" /> LOCAL DECRYPTION</span>
+            <span className="flex items-center gap-1"><Shield size={11} className="text-emerald-500" /> 🔒 LOCAL PROCESSING   |   🚀 BROWSER NATIVE   |   🛡️ PRIVACY FIRST </span>
           </div>
         </div>
 
@@ -280,15 +280,15 @@ export default function App() {
                 
                 <div className="relative z-10 space-y-3">
                   <div className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider font-mono">
-                    <Sparkles size={11} /> Next-Gen Desktop App
+                    <Sparkles size={11} /> PROFESSIONAL PDF TOOLKIT
                   </div>
                   
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-display">
                     Welcome to Zhynor PDF Toolkit
                   </h2>
                   <p className="text-slate-400 text-sm max-w-2xl font-sans">
-                    All operations run with cryptographic assurance directly inside your browser cache.
-                    No subscriptions, no server uploads, and no hidden limitations.
+                    Create, edit, merge, compress, convert, sign, and secure PDF documents directly in your browser.
+                    Your files stay on your device—fast, private, and without subscriptions.
                   </p>
                 </div>
               </div>
