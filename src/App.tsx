@@ -265,7 +265,7 @@ export default function App() {
           <div className="flex items-center gap-3 text-[10px] text-slate-400 font-mono">
             <span>Zhynor Technologies</span>
             <span>|</span>
-            <span className="flex items-center gap-1"><Shield size={11} className="text-emerald-500" /> 🔒 LOCAL PROCESSING   |   🚀 BROWSER NATIVE   |   🛡️ PRIVACY FIRST </span>
+            <span className="flex items-center gap-1"><Shield size={11} className="text-emerald-500" />  LOCAL PROCESSING   |   BROWSER NATIVE   |   PRIVACY FIRST </span>
           </div>
         </div>
 
