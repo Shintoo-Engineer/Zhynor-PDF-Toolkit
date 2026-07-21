@@ -1,0 +1,5 @@
+{
+  "name": "Zhynor PDF Toolkit",
+  "description": "A complete browser-based PDF management platform to merge, split, edit, convert, compress, sign, OCR, and analyze PDF files offline and securely. 100% client-side, zero server cost, unlimited free usage.",
+  "requestFramePermissions": []
+}
