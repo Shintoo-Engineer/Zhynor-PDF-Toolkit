@@ -23,6 +23,8 @@ import {
 import { motion } from "motion/react";
 import { formatBytes, saveRecentFile, readAsArrayBuffer } from "../utils";
 import PDFPreviewModal from "./PDFPreviewModal";
+import QRCode from "qrcode";
+import JsBarcode from "jsbarcode";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -335,84 +337,30 @@ export default function SmartAIPDF() {
   };
 
   // Generate lightweight offline canvas QR or Code-39 Barcode
-  const renderQRCodeOrBarcode = () => {
-    const canvas = qrCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  const renderQRCodeOrBarcode = async () => {
+  const canvas = qrCanvasRef.current;
+  if (!canvas) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (qrType === "barcode") {
-      // Render clean Code 39-like Barcode lines
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#000000";
-
-      // Draw random bar lines based on hashing the text
-      let x = 30;
-      const seed = qrText || "123456";
-      
-      for (let i = 0; i < seed.length; i++) {
-        const charCode = seed.charCodeAt(i);
-        const patterns = [
-          [2, 1, 1, 2, 1],
-          [1, 2, 1, 1, 2],
-          [2, 2, 1, 1, 1],
-          [1, 1, 2, 1, 2],
-        ];
-        const pattern = patterns[charCode % patterns.length];
-
-        for (const width of pattern) {
-          ctx.fillRect(x, 20, width * 3, 100);
-          x += width * 3 + 4;
-        }
-      }
-
-      // Draw label
-      ctx.font = "12px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText(qrText.toUpperCase().slice(0, 15), canvas.width / 2, 140);
-    } else {
-      // Draw simulated high-fidelity QR Code blocks
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#090d16"; // deep navy-black
-
-      // QR finder patterns (corners)
-      const drawFinder = (px: number, py: number) => {
-        ctx.fillRect(px, py, 42, 42);
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(px + 6, py + 6, 30, 30);
-        ctx.fillStyle = "#090d16";
-        ctx.fillRect(px + 12, py + 12, 18, 18);
-      };
-
-      drawFinder(20, 20); // Top-left
-      drawFinder(158, 20); // Top-right
-      drawFinder(20, 158); // Bottom-left
-
-      // Random high-fidelity noise based on hashing text
-      let textHash = 0;
-      for (let i = 0; i < qrText.length; i++) {
-        textHash += qrText.charCodeAt(i) * (i + 1);
-      }
-
-      for (let row = 0; row < 22; row++) {
-        for (let col = 0; col < 22; col++) {
-          // Avoid finder pattern zones
-          if (row < 7 && col < 7) continue;
-          if (row < 7 && col > 14) continue;
-          if (row > 14 && col < 7) continue;
-
-          const seededVal = Math.sin(textHash + row * 13 + col * 37);
-          if (seededVal > 0) {
-            ctx.fillRect(20 + col * 8, 20 + row * 8, 8, 8);
-          }
-        }
-      }
-    }
-  };
+  if (qrType === "qr") {
+    await QRCode.toCanvas(canvas, qrText.trim(), {
+      width: 220,
+      margin: 2,
+      errorCorrectionLevel: "H",
+      color: {
+        dark: "#000000",
+        light: "#FFFFFF",
+      },
+    });
+  } else {
+    JsBarcode(canvas, qrText, {
+      format: "CODE128",
+      width: 2,
+      height: 80,
+      displayValue: true,
+      margin: 10,
+    });
+  }
+};
 
   const handleDownloadQrBarcode = () => {
     const canvas = qrCanvasRef.current;
