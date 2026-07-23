@@ -359,10 +359,16 @@ export default function OrganizePDF() {
 
       return await outputPdf.save();
     } catch (err) {
-      console.error("Page manager save error", err);
-      alert("Failed to organize document. Make sure files are valid.");
-      return null;
-    }
+        console.error("Page manager save error:", err);
+
+        if (err instanceof Error) {
+          alert(err.message);
+        } else {
+          alert(JSON.stringify(err));
+        }
+
+        return null;
+      }
   };
 
   const handlePageManagerAction = async () => {
