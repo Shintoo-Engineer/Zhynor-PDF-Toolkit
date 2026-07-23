@@ -33,13 +33,18 @@ interface PageItem {
 
 export default function OrganizePDF() {
   const [selectedTool, setSelectedTool] = useState<"merge" | "split" | "manager">("merge");
-  const [files, setFiles] = useState<{ name: string; buffer: ArrayBuffer; size: number }[]>([]);
+  interface PDFFile {
+  name: string;
+  bytes: Uint8Array;
+  size: number;
+  }
+  const [files, setFiles] = useState<PDFFile[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   
   // Preview states
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewBuffer, setPreviewBuffer] = useState<ArrayBuffer | null>(null);
+  const [previewBuffer, setPreviewBuffer] = useState<Uint8Array | null>(null);
   const [previewName, setPreviewName] = useState("");
   
   // Split tool state
@@ -66,32 +71,46 @@ export default function OrganizePDF() {
     }
   }, [selectedTool, files]);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setLoading(true);
-      setProgress("Reading uploaded file(s)...");
-      const newFiles = [...files];
-      
-      for (let i = 0; i < e.target.files.length; i++) {
-        const file = e.target.files[i];
-        try {
-          const buffer = await readAsArrayBuffer(file);
-          newFiles.push({
-            name: file.name,
-            buffer,
-            size: file.size,
-          });
-          saveRecentFile({ name: file.name, size: file.size, type: "PDF" });
-        } catch (err) {
-          console.error("Error reading file", err);
-        }
-      }
-      setFiles(newFiles);
-      setLoading(false);
-      setProgress("");
-      if (fileInputRef.current) fileInputRef.current.value = "";
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+  if (!e.target.files) return;
+
+  setLoading(true);
+  setProgress("Reading uploaded file(s)...");
+
+  try {
+    const uploaded: PDFFile[] = [];
+
+    for (const file of Array.from(e.target.files)) {
+
+      const buffer = await readAsArrayBuffer(file);
+
+      uploaded.push({
+        name: file.name,
+        bytes: new Uint8Array(buffer),
+        size: file.size,
+      });
+
+      saveRecentFile({
+        name: file.name,
+        size: file.size,
+        type: "PDF",
+      });
     }
-  };
+
+    setFiles(prev => [...prev, ...uploaded]);
+
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+    setProgress("");
+
+    if (fileInputRef.current)
+      fileInputRef.current.value = "";
+  }
+};
 
   // Convert PDF pages to images (thumbnails) using PDF.js in the browser
   const loadPageThumbnails = async () => {
@@ -109,7 +128,7 @@ export default function OrganizePDF() {
 
       for (let fileIdx = 0; fileIdx < files.length; fileIdx++) {
         const file = files[fileIdx];
-        const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(file.buffer) });
+        const loadingTask = pdfjsLib.getDocument({data: file.bytes.slice()});
         const pdf = await loadingTask.promise;
         
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
@@ -141,7 +160,7 @@ export default function OrganizePDF() {
       const allPagesFallback: PageItem[] = [];
       try {
         for (let fileIdx = 0; fileIdx < files.length; fileIdx++) {
-          const doc = await PDFDocument.load(files[fileIdx].buffer);
+          const doc = await PDFDocument.load(files[fileIdx].bytes.slice());
           const count = doc.getPageCount();
           for (let p = 0; p < count; p++) {
             allPagesFallback.push({
@@ -178,7 +197,9 @@ export default function OrganizePDF() {
       const mergedPdf = await PDFDocument.create();
       
       for (const file of files) {
-        const doc = await PDFDocument.load(file.buffer);
+        const doc = await PDFDocument.load(
+            file.bytes.slice()
+        );
         const copiedPages = await mergedPdf.copyPages(doc, doc.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       }
@@ -209,7 +230,7 @@ export default function OrganizePDF() {
     setProgress("Compiling preview document...");
     const bytes = await generateMergedBytes();
     if (bytes) {
-      setPreviewBuffer(bytes.buffer);
+      setPreviewBuffer(bytes);
       setPreviewName("merged_document.pdf");
       setPreviewOpen(true);
     }
@@ -224,7 +245,9 @@ export default function OrganizePDF() {
     
     try {
       const sourceFile = files[0];
-      const sourceDoc = await PDFDocument.load(sourceFile.buffer);
+      const sourceDoc = await PDFDocument.load(
+          sourceFile.bytes.slice()
+      );
       const totalPages = sourceDoc.getPageCount();
       const zip = new JSZip();
 
@@ -292,7 +315,11 @@ export default function OrganizePDF() {
       // Load all source documents
       const docs: PDFDocument[] = [];
       for (const f of files) {
-        docs.push(await PDFDocument.load(f.buffer));
+        docs.push(
+             await PDFDocument.load(
+                 f.bytes.slice()
+             )
+        );
       }
 
       // Track running total pages for formatting page numbers
@@ -389,7 +416,7 @@ export default function OrganizePDF() {
     setProgress("Rendering organized book preview...");
     const bytes = await generateOrganizedBytes();
     if (bytes) {
-      setPreviewBuffer(bytes.buffer);
+      setPreviewBuffer(bytes);
       setPreviewName("organized_document.pdf");
       setPreviewOpen(true);
     }
@@ -527,7 +554,7 @@ export default function OrganizePDF() {
                   <div className="flex items-center gap-1 shrink-0">
                     <button
                       onClick={() => {
-                        setPreviewBuffer(file.buffer);
+                      setPreviewBuffer(file.bytes.slice());
                         setPreviewName(file.name);
                         setPreviewOpen(true);
                       }}
